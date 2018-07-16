@@ -336,6 +336,8 @@ abstract class TreeNode[BaseType <: TreeNode[BaseType]] extends Product {
         false
       } else {
         val argsArray: Array[Class[_]] = allArgs.map(_.getClass)
+        // this previously used classutils, not sure this approach is
+        // the same exactly (has no unboxing)
         argsArray.zip(ctor.getParameterTypes)
           .map(f => f._1.getClass.isAssignableFrom(f._2).booleanValue())
           .forall(_ == true)
