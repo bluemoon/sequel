@@ -1,5 +1,7 @@
 package sql
 
+import sql.ast.Ast
+
 object WsApi extends fastparse.WhitespaceApi.Wrapper(Lexical.ws)
 
 object Lexical {
@@ -28,7 +30,7 @@ object Lexical {
     P((letter | "_") ~ (letter | digit | "_").rep).!.filter(!keywords.contains(_)).map(Ast.identifier)
 
   def op[T](s: P0, rhs: T) = s.!.map(_ => rhs)
-  val Eq = op("=", Ast.cmpop.Eq)
+  val Eq = op("=", Ast.ComparisonOp.Eq)
 
   val comparison_operators = P(Eq)
 

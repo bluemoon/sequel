@@ -30,8 +30,16 @@ object Errors {
   }
 }
 
+trait TNodeLike[+T, +N <: TNodeLike[T, N]] { self: N =>
+  def children: Seq[N]
+}
+
+//trait TNode[+T] extends TNode[T, TNode[T]]
+
+
 abstract class TreeNode[BaseType <: TreeNode[BaseType]] extends Product {
   self: BaseType =>
+
   def children: Seq[BaseType]
 
   lazy val containsChild: Set[TreeNode[_]] = children.toSet
@@ -361,5 +369,40 @@ abstract class TreeNode[BaseType <: TreeNode[BaseType]] extends Product {
     }
   }
 
+  protected def innerChildren: Seq[TreeNode[_]] = Seq.empty
+
   def nodeName: String = getClass.getSimpleName.replaceAll("Exec$", "")
+  def simpleString: String = s"$nodeName".trim
+
+  def treeString: String = {
+    buildTreeString(0, Nil, new StringBuilder).toString
+  }
+
+  def buildTreeString(depth: Int, lastChildren: Seq[Boolean], builder: StringBuilder): StringBuilder = {
+    if (depth > 0) {
+      lastChildren.init.foreach { isLast =>
+        builder.append(if (isLast) "   " else ":  ")
+      }
+      builder.append(if (lastChildren.last) "+- " else ":- ")
+    }
+
+    builder.append(simpleString)
+    builder.append("\n")
+
+    if (innerChildren.nonEmpty) {
+      innerChildren.init.foreach(_.buildTreeString(
+        depth + 2, lastChildren :+ children.isEmpty :+ false, builder))
+      innerChildren.last.buildTreeString(
+        depth + 2, lastChildren :+ children.isEmpty :+ true, builder)
+    }
+
+    if (children.nonEmpty) {
+      children.init.foreach(_.buildTreeString(
+        depth + 1, lastChildren :+ false, builder))
+      children.last.buildTreeString(
+        depth + 1, lastChildren :+ true, builder)
+    }
+
+    builder
+  }
 }

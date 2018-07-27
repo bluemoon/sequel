@@ -1,10 +1,11 @@
 import fastparse.core.Parsed
 import pprint.pprintln
-import sql.{Ast, Statements}
+import sql.Statements
+import sql.ast.Ast
 import utest._
 
 object ParsingTests extends TestSuite {
-  import Ast._
+  import sql.ast.Ast._
 
   val tests = Tests {
     'basicProjection - {
@@ -58,7 +59,7 @@ object ParsingTests extends TestSuite {
         Some(
           Ast.From(
             Seq(Ast.Path(Seq("table_b"))),
-            Some(Ast.Where(Seq(Ast.expression.Compare("1", List(Ast.cmpop.Eq), List("1")))))
+            Some(Ast.Where(Seq(Ast.expression.Compare("1", List(Ast.ComparisonOp.Eq), List("1"))), None))
           )
         )
       )

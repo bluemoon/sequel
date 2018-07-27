@@ -2,6 +2,7 @@ package sql
 
 import fastparse.noApi._
 import WsApi._
+import sql.ast.{Ast, Plan}
 
 object Statements {
   val path = P(Lexical.identifier.rep(min = 1, sep=".")).map {
@@ -37,16 +38,16 @@ object Statements {
   val expression = orStatement
 
   val whereStatement = P(Lexical.kw("where") ~ expression.rep(min = 1)).map {
-    case (comparisons) => Ast.Where(comparisons)
+    case (comparisons) => Plan.where(comparisons, None)
   }
 
   val fromStatement = P(Lexical.kw("from") ~ tableList.rep(sep = ",") ~ whereStatement.?).map {
-    case (tables, where) => Ast.From(tables, where)
+    case (tables, where) => Plan.from(tables, where)
   }
 
   val selectStatement = P(
     Lexical.kw("select") ~ projection.rep(sep = ",") ~ fromStatement.?).map {
-    case (projections, from) => Ast.Select(projections, from)
+    case (projections, from) => Plan.select(projections, from)
   }
 }
 

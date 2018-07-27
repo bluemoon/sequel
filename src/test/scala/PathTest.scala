@@ -1,10 +1,10 @@
 import fastparse.core.Parsed
 import pprint.pprintln
-import sql.{Ast, Statements}
+import sql.Statements
 import utest._
 
 object PathTest extends TestSuite {
-  import Ast._
+  import sql.ast.Ast._
 
   val tests = Tests {
     'validPath - {
