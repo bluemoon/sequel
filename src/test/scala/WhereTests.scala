@@ -5,6 +5,7 @@ import utest._
 
 object WhereTests extends TestSuite {
   import sql.ast.Ast._
+  import sql.ast.Where
   val tests = Tests {
     'simpleWhereEquality - {
       val Parsed.Success(result, _) = Statements.whereStatement.parse("where bob = 1")

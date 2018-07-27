@@ -2,10 +2,11 @@ import fastparse.core.Parsed
 import pprint.pprintln
 import sql.Statements
 import sql.ast.Ast
+import sql.ast.Ast.{Path, Projection, identifier}
 import utest._
 
 object ParsingTests extends TestSuite {
-  import sql.ast.Ast._
+  import sql.ast._
 
   val tests = Tests {
     'basicProjection - {
@@ -15,17 +16,17 @@ object ParsingTests extends TestSuite {
 
     'basicSelectCaseInsensitive - {
       val Parsed.Success(result, _) = Statements.selectStatement.parse("SELECT a FROM bob")
-      assert(result == Ast.Select(
+      assert(result == Select(
         Seq(Ast.Projection(Ast.Path(Seq("a")), None)),
-        Some(Ast.From(Seq(Ast.Path(Seq("bob"))), None)))
+        Some(From(Seq(Ast.Path(Seq("bob"))), None)))
       )
     }
 
     'basicSelect - {
       val Parsed.Success(result, _) = Statements.selectStatement.parse("select a from bob")
-      assert(result == Ast.Select(
+      assert(result == Select(
           Seq(Ast.Projection(Ast.Path(Seq("a")), None)),
-          Some(Ast.From(Seq(Ast.Path(Seq("bob"))), None))
+          Some(From(Seq(Ast.Path(Seq("bob"))), None))
         )
       )
     }
@@ -40,7 +41,7 @@ object ParsingTests extends TestSuite {
 
     'manyProjectedSelect - {
       val Parsed.Success(result, _) = Statements.selectStatement.parse("select a, b.m, c, d, e as t from bob")
-      assert(result == Ast.Select(
+      assert(result == Select(
         Seq(
           Ast.Projection(Ast.Path(Seq("a")), None),
           Ast.Projection(Ast.Path(Seq("b", "m")), None),
@@ -48,18 +49,18 @@ object ParsingTests extends TestSuite {
           Ast.Projection(Ast.Path(Seq("d")), None),
           Ast.Projection(Ast.Path(Seq("e")), Some(Ast.identifier("t")))
         ),
-        Some(Ast.From(Seq(Ast.Path(Seq("bob"))), None))
+        Some(From(Seq(Ast.Path(Seq("bob"))), None))
       ))
     }
 
     'selectWithWhere - {
       val Parsed.Success(result, _) = Statements.selectStatement.parse("select a from table_b where 1=1")
-      assert(result == Ast.Select(
+      assert(result == Select(
         Seq(Ast.Projection(Ast.Path(Seq("a")), None)),
         Some(
-          Ast.From(
+          From(
             Seq(Ast.Path(Seq("table_b"))),
-            Some(Ast.Where(Seq(Ast.expression.Compare("1", List(Ast.ComparisonOp.Eq), List("1"))), None))
+            Some(Where(Seq(Ast.expression.Compare("1", List(Ast.ComparisonOp.Eq), List("1"))), None))
           )
         )
       )
