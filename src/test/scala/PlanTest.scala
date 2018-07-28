@@ -1,15 +1,15 @@
-import fastparse.core.Parsed
-import pprint.pprintln
-import sql.Statements
-import sql.ast.Ast
 import utest._
+import matryoshka._
+import matryoshka.implicits._
+import sql.ast.Ast
 
 object PlanTest extends TestSuite {
   import sql.ast.Plan._
 
   val tests = Tests {
     'exprTest - {
-      select(Seq.empty[Ast.Projection], None)
+      val selectPlan = select(Seq.empty[Ast.Projection], None)
+      assert(selectPlan.cata(renderSQL) == "SELECT")
     }
   }
 }
