@@ -2,7 +2,7 @@ package sql
 
 import fastparse.noApi._
 import WsApi._
-import sql.ast.{Ast, Plan}
+import sql.ast.{Ast, Plan, Projection}
 
 object Statements {
   val path = P(Lexical.identifier.rep(min = 1, sep=".")).map {
@@ -15,7 +15,7 @@ object Statements {
   )
 
   val projection = P(path ~ aliasStatement.?).map {
-    case (p, as) => Ast.Projection(p, as)
+    case (p, as) => Projection(p, as)
   }
 
   val tableList = P(path ~ Lexical.space.?)

@@ -2,23 +2,24 @@ import fastparse.core.Parsed
 import pprint.pprintln
 import sql.Statements
 import sql.ast.Ast
-import sql.ast.Ast.{Path, Projection, identifier}
+import sql.ast.Ast.{Path, identifier}
 import utest._
 
 object ParsingTests extends TestSuite {
   import sql.ast.Ast
   import sql.ast.Plan._
+  import sql.ast.Projection
 
   val tests = Tests {
     'basicProjection - {
       val Parsed.Success(result, _) = Statements.projection.parse("bob as bobby")
-      assert(result == Ast.Projection(Ast.Path(Seq("bob")), Some(Ast.identifier("bobby"))))
+      assert(result == Projection(Ast.Path(Seq("bob")), Some(Ast.identifier("bobby"))))
     }
 
     'basicSelectCaseInsensitive - {
       val Parsed.Success(result, _) = Statements.selectStatement.parse("SELECT a FROM bob")
       assert(result == select(
-        Seq(Ast.Projection(Ast.Path(Seq("a")), None)),
+        Seq(Projection(Ast.Path(Seq("a")), None)),
         Some(from(Seq(Ast.Path(Seq("bob"))), None)))
       )
     }
@@ -26,7 +27,7 @@ object ParsingTests extends TestSuite {
     'basicSelect - {
       val Parsed.Success(result, _) = Statements.selectStatement.parse("select a from bob")
       assert(result == select(
-          Seq(Ast.Projection(Ast.Path(Seq("a")), None)),
+          Seq(Projection(Ast.Path(Seq("a")), None)),
           Some(from(Seq(Ast.Path(Seq("bob"))), None))
         )
       )
@@ -44,11 +45,11 @@ object ParsingTests extends TestSuite {
       val Parsed.Success(result, _) = Statements.selectStatement.parse("select a, b.m, c, d, e as t from bob")
       assert(result == select(
         Seq(
-          Ast.Projection(Ast.Path(Seq("a")), None),
-          Ast.Projection(Ast.Path(Seq("b", "m")), None),
-          Ast.Projection(Ast.Path(Seq("c")), None),
-          Ast.Projection(Ast.Path(Seq("d")), None),
-          Ast.Projection(Ast.Path(Seq("e")), Some(Ast.identifier("t")))
+          Projection(Ast.Path(Seq("a")), None),
+          Projection(Ast.Path(Seq("b", "m")), None),
+          Projection(Ast.Path(Seq("c")), None),
+          Projection(Ast.Path(Seq("d")), None),
+          Projection(Ast.Path(Seq("e")), Some(Ast.identifier("t")))
         ),
         Some(from(Seq(Ast.Path(Seq("bob"))), None))
       ))
@@ -57,7 +58,7 @@ object ParsingTests extends TestSuite {
     'selectWithWhere - {
       val Parsed.Success(result, _) = Statements.selectStatement.parse("select a from table_b where 1=1")
       assert(result == select(
-        Seq(Ast.Projection(Ast.Path(Seq("a")), None)),
+        Seq(Projection(Ast.Path(Seq("a")), None)),
         Some(
           from(
             Seq(Ast.Path(Seq("table_b"))),

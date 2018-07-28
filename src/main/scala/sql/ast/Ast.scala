@@ -1,5 +1,6 @@
 package sql.ast
 
+
 object Ast {
   case class identifier(name: String)
 
@@ -37,11 +38,4 @@ object Ast {
   }
 
   case class Path(seq: Seq[String])
-
-  case class Projection(path: Path, as: Option[identifier]) {
-    override def toString: String = {
-      val asValue = as.fold("")(f => s" as ${f.name}")
-      s"$path$asValue"
-    }
-  }
 }
