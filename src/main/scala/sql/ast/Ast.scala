@@ -28,14 +28,6 @@ object Ast {
     case object Or extends boolop
   }
 
-  sealed trait expr // extends TreeNode[expr]
-  object expression {
-    case class Num(n: Any) extends expr
-    case class Str(s: String) extends expr
-    case class BoolOp(op: boolop, values: Seq[Any]) extends expr
-    case class BinaryOp(left: expr, right: expr) extends expr
-    case class Compare(left: Any, ops: Seq[ComparisonOp], comparators: Seq[Any]) extends expr
-  }
 
   case class Path(seq: Seq[String])
 }

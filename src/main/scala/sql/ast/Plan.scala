@@ -5,12 +5,12 @@ import matryoshka.data.Fix
 import matryoshka.implicits._
 import scalaz.{Foldable, Monoid}
 import scalaz.std.list._
-import sql.ast.Ast.{Path, expr}
+import sql.ast.Ast.Path
 
 sealed trait PlanF[A]
 
 case class Select[A](body: Seq[Projection], child: Option[A]) extends PlanF[A]
-case class Where[A](expressions: Seq[expr], child: Option[A]) extends PlanF[A]
+case class Where[A](expressions: Seq[Expression], child: Option[A]) extends PlanF[A]
 case class From[A](tables: Seq[Path], child: Option[A]) extends PlanF[A]
 
 object Plan {
@@ -50,7 +50,7 @@ object Plan {
   def select(body: Seq[Projection], child: Option[Plan]): Plan =
     Fix(Select(body, child))
 
-  def where(expressions: Seq[expr], child: Option[Plan]): Plan =
+  def where(expressions: Seq[Expression], child: Option[Plan]): Plan =
     Fix(Where(expressions, child))
 
   def from(tables: Seq[Path], child: Option[Plan]) =

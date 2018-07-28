@@ -1,7 +1,7 @@
 import fastparse.core.Parsed
 import pprint.pprintln
 import sql.Statements
-import sql.ast.Ast
+import sql.ast.{Ast, Expression}
 import sql.ast.Ast.{Path, identifier}
 import utest._
 
@@ -62,7 +62,7 @@ object ParsingTests extends TestSuite {
         Some(
           from(
             Seq(Ast.Path(Seq("table_b"))),
-            Some(where(Seq(Ast.expression.Compare("1", List(Ast.ComparisonOp.Eq), List("1"))), None))
+            Some(where(Seq(Expression.Compare("1", List(Ast.ComparisonOp.Eq), List("1"))), None))
           )
         )
       )

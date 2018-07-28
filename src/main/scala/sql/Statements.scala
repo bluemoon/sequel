@@ -2,7 +2,7 @@ package sql
 
 import fastparse.noApi._
 import WsApi._
-import sql.ast.{Ast, Plan, Projection}
+import sql.ast.{Ast, Plan, Projection, Expression}
 
 object Statements {
   val path = P(Lexical.identifier.rep(min = 1, sep=".")).map {
@@ -22,17 +22,17 @@ object Statements {
 
   val comparable = P(Lexical.identifier | Lexical.float | Lexical.digit.rep)
   val comparison = P(comparable.! ~ Lexical.comparison_operators ~ comparable.!).map {
-    case (lhs, op, rhs) => Ast.expression.Compare(lhs, Seq(op), Seq(rhs))
+    case (lhs, op, rhs) => Expression.Compare(lhs, Seq(op), Seq(rhs))
   }
 
-  val notStatement: Parser[Ast.expr] = P((Lexical.kw("not") ~ notStatement) | comparison)
+  val notStatement: Parser[Expression] = P((Lexical.kw("not") ~ notStatement) | comparison)
   val andStatement = P(notStatement.rep(1, Lexical.kw("and"))).map {
     case Seq(x) => x
-    case xs => Ast.expression.BoolOp(Ast.boolop.And, xs)
+    case xs => Expression.BoolOp(Ast.boolop.And, xs)
   }
   val orStatement = P(andStatement.rep(1, Lexical.kw("or"))).map {
     case Seq(x) => x
-    case xs => Ast.expression.BoolOp(Ast.boolop.Or, xs)
+    case xs => Expression.BoolOp(Ast.boolop.Or, xs)
   }
 
   val expression = orStatement

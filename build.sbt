@@ -13,3 +13,4 @@ libraryDependencies ++= Seq(
 
 scalacOptions += "-Ypartial-unification"
 testFrameworks += new TestFramework("utest.runner.Framework")
+resolvers += Resolver.sonatypeRepo("releases")
