@@ -4,7 +4,9 @@ import matryoshka._
 import matryoshka.data.Fix
 import matryoshka.implicits._
 import matryoshka.patterns.EnvT
-import scalaz.{Foldable, Monoid}
+import scalaz._
+import Scalaz._
+import scalaz.{Foldable, Monoid, Scalaz}
 import scalaz.std.list._
 import sql.ast.Ast.Path
 
@@ -25,23 +27,6 @@ object Plan {
     }
   }
 
-  implicit val spaceSuffixStringMonoid: scalaz.Monoid[Option[String]] = new Monoid[Option[String]] {
-    override def zero: Option[String] = None
-    override def append(f1: Option[String], f2: => Option[String]): Option[String] = {
-      if(f1.isDefined && f2.isDefined) {
-        Some(f1.getOrElse("") + " " + f2.getOrElse(""))
-      } else {
-        f1.orElse(f2)
-      }
-    }
-  }
-
-//  def labelWithPath[T](implicit T: Recursive.Aux[T, PlanF]): Coalgebra[EnvT[Path, PlanF, ?], (Path, T)] = {
-//    case (path, t) =>
-//      t.project match {
-//        case schema => EnvT((path, schema))
-//      }
-//  }
   type WithPath[A] = EnvT[String, PlanF, A]
 
   val planWithPath: Coalgebra[WithPath, (String, Fix[PlanF])] = {
@@ -73,7 +58,10 @@ object Plan {
         Some(children),
         child
       )
-      Foldable[List].fold(sql)(Monoid[Option[String]]).getOrElse("")
+
+      sql
+        .intercalate(Some(" "))
+        .getOrElse("")
     }
   }
 
