@@ -3,6 +3,7 @@ package sql.ast
 import matryoshka._
 import matryoshka.data.Fix
 import matryoshka.implicits._
+import matryoshka.patterns.EnvT
 import scalaz.{Foldable, Monoid}
 import scalaz.std.list._
 import sql.ast.Ast.Path
@@ -32,6 +33,35 @@ object Plan {
       } else {
         f1.orElse(f2)
       }
+    }
+  }
+
+//  def labelWithPath[T](implicit T: Recursive.Aux[T, PlanF]): Coalgebra[EnvT[Path, PlanF, ?], (Path, T)] = {
+//    case (path, t) =>
+//      t.project match {
+//        case schema => EnvT((path, schema))
+//      }
+//  }
+  type WithPath[A] = EnvT[String, PlanF, A]
+
+  val planWithPath: Coalgebra[WithPath, (String, Fix[PlanF])] = {
+    case (path, Fix(Select(t, child))) => {
+      EnvT((
+        path,
+        Select(t, child.map(f => (s"$path.select", f)))
+      ))
+    }
+    case (path, Fix(Where(t, child))) => {
+      EnvT((
+        path,
+        Where(t, child.map(f => (s"$path.where", f)))
+      ))
+    }
+  }
+
+  def labelWithDepth[T](t: T)(implicit T: Recursive.Aux[T, PlanF]) = {
+    T.attributeTopDown[Int](t, 0) {
+      case (depth, _) => depth + 1
     }
   }
 
