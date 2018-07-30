@@ -59,9 +59,7 @@ object Plan {
         child
       )
 
-      sql
-        .intercalate(Some(" "))
-        .getOrElse("")
+      sql.flatten.mkString(" ")
     }
   }
 

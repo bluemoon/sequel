@@ -45,8 +45,8 @@ object Statements {
     case (tables, where) => Plan.from(tables, where)
   }
 
-  val selectStatement = P(
-    Lexical.kw("select") ~ projection.rep(sep = ",") ~ fromStatement.?).map {
+  val selectStatement = P(Lexical.ws ~
+    Lexical.kw("select") ~ Lexical.kw("distinct").? ~ projection.rep(sep = ",") ~ fromStatement.?).map {
     case (projections, from) => Plan.select(projections, from)
   }
 }
