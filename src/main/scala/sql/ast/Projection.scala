@@ -12,5 +12,3 @@ case class Projection(path: Path, as: Option[identifier]) {
     Monoid[Option[String]].append(Some(p), as.map(f => s"$p as $f")).getOrElse("")
   }
 }
-
-

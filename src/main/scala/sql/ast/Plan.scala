@@ -14,7 +14,7 @@ sealed trait PlanF[A]
 
 case class Select[A](body: Seq[Projection], child: Option[A]) extends PlanF[A]
 case class Where[A](expressions: Seq[Expression], child: Option[A]) extends PlanF[A]
-case class From[A](tables: Seq[Path], child: Option[A]) extends PlanF[A]
+case class From[A](tables: Relation[_], child: Option[A]) extends PlanF[A]
 
 object Plan {
   type Plan = Fix[PlanF]
@@ -69,6 +69,6 @@ object Plan {
   def where(expressions: Seq[Expression], child: Option[Plan]): Plan =
     Fix(Where(expressions, child))
 
-  def from(tables: Seq[Path], child: Option[Plan]) =
+  def from(tables: Relation[_], child: Option[Plan]) =
     Fix(From(tables, child))
 }

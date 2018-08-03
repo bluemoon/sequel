@@ -25,21 +25,24 @@ object Lexical {
   val uppercase = P(CharIn('A' to 'Z'))
   val digit = P(CharIn('0' to '9'))
   val letter = P(lowercase | uppercase)
+  val singleQuotedString = P("'" ~ identifier ~ "'")
 
   val identifier: P[Ast.identifier] =
-    P((letter | "_") ~ (letter | digit | "_").rep).!.filter(!keywords.contains(_)).map(Ast.identifier)
+    P((letter | "_") ~ (letter | digit | "_").rep).!.filter(f => {
+      !keywords.contains(f.toLowerCase())
+    }).map(Ast.identifier)
 
-  def op[T](s: P0, rhs: T) = s.!.map(_ => rhs)
+  def op[T](s: String, rhs: T) = IgnoreCase(s).!.map(_ => rhs)
   val Eq = op("=", Ast.ComparisonOp.Eq)
+  val In = op("in", Ast.ComparisonOp.In)
 
-  val comparison_operators = P(Eq)
+  val comparison_operators = P(Eq | In).log()
 
 //  val Lt = op("<", Ast.cmpop.Lt)
 //  val Gt = op(">", Ast.cmpop.Gt)
 //  val GtE = op(">=", Ast.cmpop.GtE)
 //  val LtE = op("<=", Ast.cmpop.LtE)
 //  val NotEq = op("<>" | "!=", Ast.cmpop.NotEq)
-//  val In = op("in", Ast.cmpop.In)
 //  val NotIn = op("not" ~ "in", Ast.cmpop.NotIn)
 //  val Is = op("is", Ast.cmpop.Is)
 //  val IsNot = op("is" ~ "not", Ast.cmpop.IsNot)
