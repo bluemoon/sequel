@@ -41,6 +41,12 @@ object RecursionSchemes {
   // what is a
   // - Basis
   //
+  // EnvT:
+  //  EnvT[ann, f, a] is isomorphic to (ann, f a)
+  //
+  // Cofree:
+  //  Cofree[f, ann] is isomorphic to (ann, f)
+
   // Types for reference:
   //   EnvT[E, W[_], A] = (E, W[A])
   //   Cofree[F[_], A] = (A, F[Cofree[F, A]])
@@ -63,7 +69,7 @@ object RecursionSchemes {
   //  SqlF[EnvT[String, SqlF, (String, Mu[SqlF])]
   val coalg: Coalgebra[WithPath, (String, Mu[SqlF])] = Coalgebra {
     case (string: String, y: Mu[SqlF]) => Mu.un(y) match {
-      case s: Select2[_] => EnvT("imgonna", Select2(("", Mu(s))))
+      case s: Select2[_] => EnvT("imgonna", Select2((string, y)))
       case s: Nothing[_] => EnvT("f", Nothing())
     }
   }
@@ -71,12 +77,14 @@ object RecursionSchemes {
   // idk
 
 
+
+
   // lets play the type game again
   // Cofree[SqlF, A] -> Cofree[SqlF, Cofree[SqlF, String]]
-  type CFH[A] = Cofree[SqlF, A]
-  val cofree: Coalgebra[CFH, Cofree[SqlF, String]] = Coalgebra {
-    
-  }
+//  type CFH[A] = Cofree[SqlF, A]
+//  val cofree: Coalgebra[CFH, Cofree[SqlF, String]] = Coalgebra {
+//
+//  }
 
 
 
