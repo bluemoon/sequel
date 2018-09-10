@@ -4,6 +4,8 @@ import cats.Functor
 
 import qq.droste._
 import qq.droste.data._
+import qq.droste.data.prelude._
+
 import qq.droste.implicits._
 
 
@@ -36,12 +38,13 @@ object RecursionSchemes {
     }
   }
 
-  // EnvT[E, W[_], A] = (E, W[A])
+  // what is a
+  // - Basis
   //
-  // I *think* what i want is Cofree:
-  //
-  // Cofree[F[_], A] = (A, F[Cofree[F, A]])
-  // Coalgebra[F, A, A] = GCoalgebra[F[_], A, A]
+  // Types for reference:
+  //   EnvT[E, W[_], A] = (E, W[A])
+  //   Cofree[F[_], A] = (A, F[Cofree[F, A]])
+  //   Coalgebra[F, A, A] = GCoalgebra[F[_], A, A]
 
   // Coalgebra:
   //  A => F[A]
@@ -50,13 +53,6 @@ object RecursionSchemes {
 
   // In our case we want to go
   // SqlF => EnvT[a]
-  implicit val withPathFunctor: Functor[WithPath] = new Functor[WithPath] {
-    override def map[A, B](fa: EnvT[String, SqlF, A])(f: A => B): EnvT[String, SqlF, B] = {
-      val env = EnvT.un(fa)
-      val fb = implicitly[Functor[SqlF]].map(env._2)(fa => f(fa))
-      EnvT(env._1, fb)
-    }
-  }
 
   type WithPath[A] = EnvT[String, SqlF, A]
   // Match the RHS of Coalgebra
@@ -67,12 +63,21 @@ object RecursionSchemes {
   //  SqlF[EnvT[String, SqlF, (String, Mu[SqlF])]
   val coalg: Coalgebra[WithPath, (String, Mu[SqlF])] = Coalgebra {
     case (string: String, y: Mu[SqlF]) => Mu.un(y) match {
-      case s: Select2[_] => EnvT("imgonna", Select2(("wowitworks", y)))
+      case s: Select2[_] => EnvT("imgonna", Select2(("", Mu(s))))
       case s: Nothing[_] => EnvT("f", Nothing())
     }
   }
   // what does it mean to go from an EnvT[..., ..., A] to EnvT[..., ..., B]
   // idk
+
+
+  // lets play the type game again
+  // Cofree[SqlF, A] -> Cofree[SqlF, Cofree[SqlF, String]]
+  type CFH[A] = Cofree[SqlF, A]
+  val cofree: Coalgebra[CFH, Cofree[SqlF, String]] = Coalgebra {
+    
+  }
+
 
 
   val renderString: Algebra[SqlF, String] = Algebra {
