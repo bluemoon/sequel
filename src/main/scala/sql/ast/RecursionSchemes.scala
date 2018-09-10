@@ -68,10 +68,12 @@ object RecursionSchemes {
   // when you put this into a Coalgebra of EnvT[String, SqlF, A]] and (String, Mu[SqlF])  you get
   //  SqlF[EnvT[String, SqlF, (String, Mu[SqlF])]
   val coalg: Coalgebra[WithPath, (String, Mu[SqlF])] = Coalgebra {
-    case (string: String, y: Mu[SqlF]) => Mu.un(y) match {
-      case s: Select2[_] => EnvT("imgonna", Select2((string, y)))
-      case s: Nothing[_] => EnvT("f", Nothing())
-    }
+    case (string: String, y: Mu[SqlF]) => EnvT("what", Select2(("", y)))
+
+//      Mu.un(y) match {
+//      case s: Select2[_] => EnvT("imgonna", Select2((string, y)))
+//      case s: Nothing[_] => EnvT("f", Nothing())
+//    }
   }
   // what does it mean to go from an EnvT[..., ..., A] to EnvT[..., ..., B]
   // idk
