@@ -8,6 +8,7 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %% "fastparse" % "1.0.0",
   "com.lihaoyi" %% "pprint" % "0.5.3",
   "com.slamdata" %% "matryoshka-core" % "0.18.3",
+  "io.higherkindness" %% "droste-core" % "0.4.0",
   "com.lihaoyi" %% "utest" % "0.6.3" % "test"
 )
 

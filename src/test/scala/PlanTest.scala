@@ -6,7 +6,7 @@ import matryoshka.implicits._
 import scalaz.State
 import sql.Statements
 import sql.ast.Ast.Path
-import sql.ast.{Ast, Expression, PlanF, Projection}
+import sql.ast._
 
 object PlanTest extends TestSuite {
   import sql.ast.Plan._
@@ -20,7 +20,7 @@ object PlanTest extends TestSuite {
           Projection(Path(Seq("a", "c")), None)
       ), None)
 
-      assert(selectPlan.cata(renderSQL) == "SELECT a.b,a.c")
+//      assert(selectPlan.cata(renderSQL) == "SELECT a.b,a.c")
 
       val Parsed.Success(result, _) = Statements.selectStatement.parse(selectPlan.cata(renderSQL))
       assert(result == selectPlan)
@@ -34,6 +34,10 @@ object PlanTest extends TestSuite {
           Projection(Path(Seq("a", "c")), None)
         ), Some(where(Seq.empty[Expression], None)))
       println(("", selectPlan).ana[Fix[WithPath]](planWithPath))
+    }
+
+    'droste - {
+      RecursionSchemes.test
     }
   }
 }
